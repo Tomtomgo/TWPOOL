@@ -14,11 +14,13 @@ $.extend(Question.prototype, {
     // object variables
     init: function(question, reStart, reEnd, reAnswer) {
         // do initialization here
-        this.question = question;
-        this.reStart  = reStart;
-        this.reEnd    = reEnd;
-        this.reAnswer = reAnswer;
-        this.answers  = {};
+        this.question       = question;
+        this.reStart        = reStart;
+        this.reEnd          = reEnd;
+        this.reAnswer       = reAnswer;
+        this.answers        = {};
+        this.officialAnswer = null;
+        this.numberOfPoints = 10;
     },
    
     /**
@@ -35,6 +37,7 @@ $.extend(Question.prototype, {
             var endMatch = this.reEnd.exec(tweet.text);
             if (endMatch != null){
                this.endTweet = tweet;
+               this.officialAnswer = endMatch[1];
             };
         }
     },
@@ -45,7 +48,9 @@ $.extend(Question.prototype, {
     */
     processAnswerTweets: function(tweets) {
         for (var i = 0; i < tweets.length; i++){
-            var tweet = tweets[i];
+            // Reverse, oldest tweet first
+            var tweet = tweets[tweets.length - 1 - i];
+            var answersByUser = {};
             // Iterate through all expressions for this answer
             for (var j = 0; j < this.reAnswer.length; j++){
                 var m = this.reAnswer[j].exec(tweet.text);
@@ -56,9 +61,48 @@ $.extend(Question.prototype, {
                         this.answers[answer] = [];
                     }
                     this.answers[answer].push(tweet);
+                    // m[1] is the first matching group
+                    answersByUser[tweet.from_user] = [tweet, m[1]];
                 }
             }
         }
+        for (var user in answersByUser){
+            tweet = answersByUser[user][0];
+            answer = answersByUser[user][1];
+            if (!(answer in this.answers)){
+                // Create a list of all tweets that gave this answer
+                this.answers[answer] = [];
+            }
+            this.answers[answer].push(tweet);
+        }
+        
+        // Sort each answer by id, putting the earliest tweets first.        
+        for (var answer in this.answers){
+            this.answers[answer].sort(function(a,b){
+                return ( ( a.id_str == b.id_str ) ? 0 : ( ( a.id_str > b.id_str ) ? 1 : -1 ) );
+            })
+        }
+    },
+    
+    /**
+    * Assign points to users in the list, based on if they
+    * had the correct answer. If the user did not occur in the list,
+    * assigns 0 points.
+    */
+    assignPoints: function(userPoints){
+        if (this.officialAnswer == null){
+            console.log("No official answer found to this question: " + this.question);
+            return;
+         }
+         for (var i = 0; i < this.answers[this.officialAnswer].length; i ++){
+             var tweet = this.answers[this.officialAnswer][i];
+             var user = tweet.from_user;
+             if (!(user in userPoints)){
+                 userPoints[user] = 0;
+             }
+             userPoints[user] += this.numberOfPoints;
+         }
+         return userPoints;
     }
 });
 
@@ -108,8 +152,9 @@ function fetchAnswerTweets(location, since_id){
              'result_type': 'recent',
              'since_id': since_id},
       success: function(data){
-          console.log(data.results)
           _tep.questions.uitslag.processAnswerTweets(data.results);
+          console.log(_tep.questions.uitslag.assignPoints({}));
+          redraw();
       }
     });
 }
