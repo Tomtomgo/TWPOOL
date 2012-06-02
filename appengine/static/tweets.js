@@ -48,6 +48,8 @@ $.extend(Question.prototype, {
     */
     processAnswerTweets: function(tweets) {
         var answersByUser = {};
+        
+        // First, find the last answer by each user
         for (var i = 0; i < tweets.length; i++){
             // Reverse, oldest tweet first
             var tweet = tweets[tweets.length - 1 - i];
@@ -60,7 +62,8 @@ $.extend(Question.prototype, {
                 }
             }
         }
-
+        
+        // Group all the answers by the answer they gave
         for (var user in answersByUser){
             tweet = answersByUser[user][0];
             answer = answersByUser[user][1];
@@ -72,7 +75,6 @@ $.extend(Question.prototype, {
             this.answers[answer].push(tweet);
         }
         
-        console.log(this.answers);
         // Sort each answer by id, putting the earliest tweets first.        
         for (var answer in this.answers){
             this.answers[answer].sort(function(a,b){
