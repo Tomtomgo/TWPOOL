@@ -1,34 +1,3 @@
-$(document).ready(function(){
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(success, error);
-  } else {
-    error('not supported');
-  }
-});
-
-function success(position) {
-  
-  if (s.className == 'success') {
-    // prevent double loads in FF
-    return;
-  }
-
-  // store position
-  _tep.position = position
-  
-  // get objects for showing stuff.
-  var s = $('#status');
-  var map_element = $("#mapcanvas");
-
-  // report the status ofthe 
-  // setStatus(s, "found you!", "success");
-  // createMap(map_element, position);
-
-  // go fetch the twitzz
-  // twitz
-
-}
-
 function setStatus(obj, message, classname){
   
   obj[0].innerHTML = message;
@@ -63,8 +32,3 @@ function error(msg) {
   msg = "<h1>Helaas pindakaas. Om mee te doen met de Twitter EK Poule 2012 moet je geolocation aan hebben staan.</h1>";
   setStatus(s, msg, 'fail');
 }
-
-
-
-
-
