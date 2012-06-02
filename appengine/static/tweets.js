@@ -1,5 +1,4 @@
-window._tep = {};
-    
+
 // CLASSES
 /**
 * In deze class staan de regular expressions
@@ -19,9 +18,14 @@ $.extend(_tep.PollQuestion, {
        this.expressions = expressions;
    },
 
-   matchesStart: function(tweet) {
+   processOfficialTweets: function(tweets) {
        var result = this.expressions['start'].exec(tweet);
-       return (result != null);
+       this.startTweet = null;
+       this.endTweet = null;
+   },
+   
+   processAnswerTweets: function(tweets) {
+       this.answers = {};
    }
 });
 
