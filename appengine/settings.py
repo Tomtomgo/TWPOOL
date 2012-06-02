@@ -22,5 +22,4 @@ TEMPLATE_DEBUG = DEBUG
 TEMPLATE_DIRS = (
     os.path.join(ROOT_PATH, 'templates'),
 )
-MEDIA_URL = '/static/'
 
