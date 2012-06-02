@@ -110,7 +110,7 @@ $.extend(Question.prototype, {
     buildHTML: function(){
         var box = $('<div></div>');
         //Sort answers based on count.
-        
+        box.append('<h2>' + this.question + '</h2>');
         var answerCount = [];
         for (var answer in this.answers){
             answerCount.push([this.answers[answer].length, answer]);
