@@ -45,19 +45,29 @@ $.extend(Question.prototype, {
     */
     processAnswerTweets: function(tweets) {
         for (var i = 0; i < tweets.length; i++){
-            var tweet = tweets[i];
+            // Reverse, oldest tweet first
+            var tweet = tweets[tweets.length - 1 - i];
+            var answersByUser = {};
             // Iterate through all expressions for this answer
             for (var j = 0; j < this.reAnswer.length; j++){
                 var m = this.reAnswer[j].exec(tweet.text);
                 if (m != null){
-                    answer = m[1];
-                    if (!(answer in this.answers)){
-                        // Create a list of all tweets that gave this answer
-                        this.answers[answer] = [];
-                    }
-                    this.answers[answer].push(tweet);
+                    // m[1] is the first group
+
+                    answersByUser[tweet.from_user] = [tweet, m[1]];
+                    console.log("set to" + tweet.from_user)
                 }
             }
+        }
+        for (var user in answersByUser){
+            console.log("Found" + user)
+            tweet = answersByUser[user][0];
+            answer = answersByUser[user][1];
+            if (!(answer in this.answers)){
+                // Create a list of all tweets that gave this answer
+                this.answers[answer] = [];
+            }
+            this.answers[answer].push(tweet);
         }
     }
 });
