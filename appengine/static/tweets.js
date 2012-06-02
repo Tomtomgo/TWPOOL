@@ -20,7 +20,7 @@ $.extend(Question.prototype, {
         this.reAnswer       = reAnswer;
         this.answers        = {};
         this.officialAnswer = null;
-        this.numberOfPoints = 10;
+        this.numberOfPoints = 10; //TODO: We zouden het aantal punten kunnen parsen uit de tweet "Voor 10 punten: wie gaat er scoren?".
     },
    
     /**
@@ -47,28 +47,27 @@ $.extend(Question.prototype, {
     * To find the given answers and who gave them.
     */
     processAnswerTweets: function(tweets) {
+        var answersByUser = {};
+        
+        // First, find the last answer by each user
         for (var i = 0; i < tweets.length; i++){
             // Reverse, oldest tweet first
             var tweet = tweets[tweets.length - 1 - i];
-            var answersByUser = {};
             // Iterate through all expressions for this answer
             for (var j = 0; j < this.reAnswer.length; j++){
                 var m = this.reAnswer[j].exec(tweet.text);
                 if (m != null){
-                    answer = m[1].replace(" ","");
-                    if (!(answer in this.answers)){
-                        // Create a list of all tweets that gave this answer
-                        this.answers[answer] = [];
-                    }
-                    this.answers[answer].push(tweet);
                     // m[1] is the first matching group
                     answersByUser[tweet.from_user] = [tweet, m[1]];
                 }
             }
         }
+        
+        // Group all the answers by the answer they gave
         for (var user in answersByUser){
             tweet = answersByUser[user][0];
             answer = answersByUser[user][1];
+            answer = answer.replace(" ","");
             if (!(answer in this.answers)){
                 // Create a list of all tweets that gave this answer
                 this.answers[answer] = [];
@@ -103,6 +102,29 @@ $.extend(Question.prototype, {
              userPoints[user] += this.numberOfPoints;
          }
          return userPoints;
+    },
+    
+    /**
+    * Builds a div with the results
+    */
+    buildHTML: function(){
+        var box = $('<div></div>');
+        //Sort answers based on count.
+        
+        var answerCount = [];
+        for (var answer in this.answers){
+            answerCount.push([this.answers[answer].length, answer]);
+        }
+        answerCount.sort().reverse();
+        
+        for (var i = 0; i < answerCount.length; i++){
+            var bar = $('<div></div>');
+            var count = answerCount[i][0];
+            var answer = answerCount[i][1];
+            bar.append('<span>' + answer + "</span> <span>" + count + "</span>");
+            box.append(bar);
+        }
+        return box;
     }
 });
 
@@ -160,8 +182,5 @@ function fetchAnswerTweets(location, since_id){
 }
 
 function redraw(){
-    for (var key in _tep.questions.uitslag.answers){
-        var u = _tep.questions.uitslag.answers[key][0];
-        $('#container').append(u.from_user + " answered \"" + key + "\" to \"" + _tep.questions.uitslag.question + '"')
-    }
+    $('#container').append(_tep.questions.uitslag.buildHTML() )
 }
