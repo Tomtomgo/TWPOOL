@@ -8,19 +8,24 @@ $(document).ready(function(){
 
 function success(position) {
   
-  var s = $('#status');
-  var map_element = $("#mapcanvas");
-
   if (s.className == 'success') {
     // prevent double loads in FF
     return;
   }
 
+  // store position
   _tep.position = position
+  
+  // get objects for showing stuff.
+  var s = $('#status');
+  var map_element = $("#mapcanvas");
 
   // report the status ofthe 
-  setStatus(s, "found you!", "success");
-  createMap(map_element, position);
+  // setStatus(s, "found you!", "success");
+  // createMap(map_element, position);
+
+  // go fetch the twitzz
+  // twitz
 
 }
 
@@ -54,8 +59,8 @@ function createMap(obj, position){
 }
 
 function error(msg) {
-  var s = $('#status');
-  msg = "Helaas pindakaas. Om mee te doen met de Twitter EK Poule 2012 moet je geolocation aan hebben staan.";
+  var s = $('body');
+  msg = "<h1>Helaas pindakaas. Om mee te doen met de Twitter EK Poule 2012 moet je geolocation aan hebben staan.</h1>";
   setStatus(s, msg, 'fail');
 }
 
