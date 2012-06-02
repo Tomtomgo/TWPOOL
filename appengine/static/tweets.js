@@ -8,6 +8,7 @@
 Question = function(question, reStart, reEnd, reAnswer){
     this.init(question, reStart, reEnd, reAnswer);
 }
+
 $.extend(Question.prototype, {
     
     // object variables
@@ -119,13 +120,3 @@ function redraw(){
         $('#container').append(u.from_user + " answered \"" + key + "\" to \"" + _tep.questions.test.question + '"')
     }
 }
-    
-
-$(document).ready(function(){
-    fetchOfficialTweets();
-    var loc = {'lat': 52.356801,'lon':4.909659}
-    var since_id = '208933242810806271';
-    var max_id = '208933242810806273';
-    fetchAnswerTweets(loc, since_id);
-    
-})

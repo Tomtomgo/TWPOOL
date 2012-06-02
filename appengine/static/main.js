@@ -20,7 +20,12 @@ _tep.init = function(){
 
             // store position
             _tep.position = position
-  
+            
+            // fetch dze tweetz
+            var loc = {'lat': _tep.position.coords.latitude,'lon':_tep.position.coords.longitude}
+            var since_id = '208933242810806271';
+            fetchAnswerTweets(loc, since_id);
+
         }, function(){
             error();
         });
