@@ -138,8 +138,8 @@ _tep.questions = {}
 
 // MOGELIJKE VRAGEN
 _tep.questions.uitslag = new Question("Wat wordt de eindstand nederland - portugal?",
-                                      /eindstand nederland - portugal/, 
-                                      /(.+?) heeft gewonnen/,
+                                      /eindstand nederland - portugal/i, 
+                                      /nederland *- *portugal ([0-9]{1,2} *- *[0-9]{1,2})/i,
                                       [ /#hetwordt *([0-9]{1,2} *- *[0-9]{1,2})/ ]);
 
 // FETCH OFFICIELE TWEETS
