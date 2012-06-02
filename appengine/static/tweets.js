@@ -5,13 +5,12 @@
 * voor een bepaalde vraag, en de methods om
 * ertegen te matchen
 */
-_tep.PollQuestion = function(title, reStart, reEnd, reAnswer){
+Question = function(title, reStart, reEnd, reAnswer){
     this.init(title, reStart, reEnd, reAnswer);
 }
-$.extend(_tep.PollQuestion, {
+$.extend(Question.prototype, {
+    
     // object variables
-    expressions: {},
-   
     init: function(title, reStart, reEnd, reAnswer) {
         // do initialization here
         this.title    = title;
@@ -49,13 +48,13 @@ $.extend(_tep.PollQuestion, {
 
     
 // CONSTANTS
-window._tep.HASHTAGID       = "#twitterpoule";
-window._tep.OFFICIALACCOUNT = "twitterpoule2012";
-window._tep.LOCATIONRANGE = '0.1km';
+_tep.HASHTAGID       = "#twitterpoule";
+_tep.OFFICIALACCOUNT = "twitterpoule2012";
+_tep.LOCATIONRANGE = '0.1km';
     
 _tep.questions = {}
 // MOGELIJKE VRAGEN
-_tep.questions.winnaar = PollQuestion(
+_tep.questions.winnaar = new Question(
     "Winnaar wedstrijd.", 
     /Wie gaat er winnen/,
     /(.+)heeftgewonnen/,
@@ -67,7 +66,7 @@ _tep.questions.winnaar = PollQuestion(
     
 // FETCH OFFICIELE TWEETS
 function fetchOfficialTweets(){
-    var q = 'from:' + window.OFFICIALACCOUNT;
+    var q = 'from:' + _tep.OFFICIALACCOUNT;
     $.ajax({
       url: "http://search.twitter.com/search.json",
       dataType: 'jsonp',
@@ -77,8 +76,8 @@ function fetchOfficialTweets(){
              'result_type': 'recent'},
       
       success: function(data){
-          for (var q=0; q < window._tep.QUESTIONS.length; q++){
-              _tep.questionWinnaar.processOfficialTweets(data.results);
+          for (var q = 0; q < _tep.QUESTIONS.length; q++){
+              _tep.questions.winnaar.processOfficialTweets(data.results);
           }
       }
     });
@@ -86,8 +85,8 @@ function fetchOfficialTweets(){
         
 // TWEETS IN DE BUURT, MET ONZE HASHTAG, BINNEN TIJD
 function fetchAnswerTweets(location, since_id){
-    var q = window.HASHTAGID
-    var gc = location.lat + ',' + location.lon + ',' + window.LOCATIONRANGE
+    var q = _tep.HASHTAGID;
+    var gc = location.lat + ',' + location.lon + ',' + _tep.LOCATIONRANGE
     $.ajax({
       url: "http://search.twitter.com/search.json",
       dataType: 'jsonp',
@@ -101,11 +100,11 @@ function fetchAnswerTweets(location, since_id){
     });
 }
     
-    
-        
+
 $(document).ready(function(){
+    console.log("Fetching answers");
     var loc = {'lat': 52.356801,'lon':4.909659}
     var since_id = '208933242810806271';
     var max_id = '208933242810806273';
-    fetchAnswerTweets(loc, since_id, max_id);
+    fetchAnswerTweets(loc, since_id);
 })
