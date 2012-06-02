@@ -182,5 +182,5 @@ function fetchAnswerTweets(location, since_id){
 }
 
 function redraw(){
-    $('#container').append(_tep.questions.uitslag.buildHTML() )
+    $('#container').html(_tep.questions.uitslag.buildHTML() )
 }
