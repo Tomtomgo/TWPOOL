@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset='utf-8'>
+
+    <title>Twitter Pool</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"/>
+    
+    <style type="text/css">
+        body {
+            
+        }
+    </style>
+  
+</head>
+
+<body>
+    <script type="text/javascript" charset="utf-8">
+    $.get({'url': "http://search.twitter.com/search.json?q=blue%20angels&rpp=5&include_entities=true&result_type=mixed",
+           'success':function(result){
+               alert(result);
+           }})
+    </script>
+</body>
+</html>
