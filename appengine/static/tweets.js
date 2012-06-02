@@ -148,7 +148,7 @@ function fetchAnswerTweets(location, since_id){
              'since_id': since_id},
       success: function(data){
           _tep.questions.test.processAnswerTweets(data.results);
-          console.log(_tep.questions.test.assignPoints({}, 10));
+          console.log(_tep.questions.test.assignPoints({}));
           redraw();
       }
     });
