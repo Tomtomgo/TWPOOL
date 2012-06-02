@@ -1,12 +1,21 @@
 import logging, os,sys
 
-import appengine_config
+# import appengine_config
 
 # AppEngine imports.
 from google.appengine.ext.webapp import util
 
 # Import webapp.template.  This makes most Django setup issues go away.
 from google.appengine.ext.webapp import template
+
+# Declare the Django version we need.
+import django
+
+# Custom Django configuration.
+# NOTE: All "main" scripts must import webapp.template before django.
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from django.conf import settings
+settings._target = None
 
 # Import various parts of Django.
 import django.core.handlers.wsgi
