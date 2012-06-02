@@ -20,7 +20,7 @@ $.extend(Question.prototype, {
         this.reAnswer       = reAnswer;
         this.answers        = {};
         this.officialAnswer = null;
-        this.numberOfPoints = 10;
+        this.numberOfPoints = 10; //TODO: We zouden het aantal punten kunnen parsen uit de tweet "Voor 10 punten: wie gaat er scoren?".
     },
    
     /**
