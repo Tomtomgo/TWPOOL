@@ -35,6 +35,7 @@ $.extend(Question.prototype, {
             var endMatch = this.reEnd.exec(tweet.text);
             if (endMatch != null){
                this.endTweet = tweet;
+               this.officialAnswer = endMatch[1];
             };
         }
     },
@@ -52,15 +53,12 @@ $.extend(Question.prototype, {
             for (var j = 0; j < this.reAnswer.length; j++){
                 var m = this.reAnswer[j].exec(tweet.text);
                 if (m != null){
-                    // m[1] is the first group
-
+                    // m[1] is the first matching group
                     answersByUser[tweet.from_user] = [tweet, m[1]];
-                    console.log("set to" + tweet.from_user)
                 }
             }
         }
         for (var user in answersByUser){
-            console.log("Found" + user)
             tweet = answersByUser[user][0];
             answer = answersByUser[user][1];
             if (!(answer in this.answers)){
@@ -68,6 +66,13 @@ $.extend(Question.prototype, {
                 this.answers[answer] = [];
             }
             this.answers[answer].push(tweet);
+        }
+        
+        // Sort each answer by id, putting the earliest tweets first.        
+        for (var answer in this.answers){
+            this.answers[answer].sort(function(a,b){
+                return ( ( a.id_str == b.id_str ) ? 0 : ( ( a.id_str > b.id_str ) ? 1 : -1 ) );
+            })
         }
     }
 });
@@ -120,6 +125,7 @@ function fetchAnswerTweets(location, since_id){
              'since_id': since_id},
       success: function(data){
           _tep.questions.test.processAnswerTweets(data.results);
+          redraw();
       }
     });
 }
