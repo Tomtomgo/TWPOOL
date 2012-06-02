@@ -14,10 +14,6 @@ handlers:
   login: admin
 
 ### STATIC HANDLERS ###
-- url: /favicon.ico
-  static_files: static/theme/favicon.ico
-  upload: static/theme/favicon.ico
-
 - url: /static
   static_dir: static
 

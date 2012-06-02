@@ -15,4 +15,4 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 def frontpage(request):
     """ Renders the frontpage/redirects to mobile front page
     """
-    return HttpResponseRedirect('static/')
+    return HttpResponseRedirect('static/index.html')
