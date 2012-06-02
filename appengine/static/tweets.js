@@ -121,7 +121,8 @@ $.extend(Question.prototype, {
             var bar = $('<div></div>');
             var count = answerCount[i][0];
             var answer = answerCount[i][1];
-            bar.append('<span>' + answer + "</span> <span>" + count + "</span>");
+            var users = $.map(this.answers[answer], function(el, idx){ return el.from_user }).join()
+            bar.append('<span>' + answer + "</span> <span>" + count + "("+ users+")</span>");
             box.append(bar);
         }
         return box;
