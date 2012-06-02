@@ -14,11 +14,13 @@ $.extend(Question.prototype, {
     // object variables
     init: function(question, reStart, reEnd, reAnswer) {
         // do initialization here
-        this.question = question;
-        this.reStart  = reStart;
-        this.reEnd    = reEnd;
-        this.reAnswer = reAnswer;
-        this.answers  = {};
+        this.question       = question;
+        this.reStart        = reStart;
+        this.reEnd          = reEnd;
+        this.reAnswer       = reAnswer;
+        this.answers        = {};
+        this.officialAnswer = null;
+        this.numberOfPoints = 10;
     },
    
     /**
@@ -74,6 +76,27 @@ $.extend(Question.prototype, {
                 return ( ( a.id_str == b.id_str ) ? 0 : ( ( a.id_str > b.id_str ) ? 1 : -1 ) );
             })
         }
+    },
+    
+    /**
+    * Assign points to users in the list, based on if they
+    * had the correct answer. If the user did not occur in the list,
+    * assigns 0 points.
+    */
+    assignPoints: function(userPoints){
+        if (this.officialAnswer == null){
+            console.log("No official answer found to this question: " + this.question);
+            return;
+         }
+         for (var i = 0; i < this.answers[this.officialAnswer].length; i ++){
+             var tweet = this.answers[this.officialAnswer][i];
+             var user = tweet.from_user;
+             if (!(user in userPoints)){
+                 userPoints[user] = 0;
+             }
+             userPoints[user] += this.numberOfPoints;
+         }
+         return userPoints;
     }
 });
 
@@ -125,6 +148,7 @@ function fetchAnswerTweets(location, since_id){
              'since_id': since_id},
       success: function(data){
           _tep.questions.test.processAnswerTweets(data.results);
+          console.log(_tep.questions.test.assignPoints({}, 10));
           redraw();
       }
     });
