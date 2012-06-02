@@ -17,17 +17,12 @@ _tep.init = function(){
 
             // if already set, do not
             if(typeof(_tep.position)!="undefined"){return;}
-            
+
             // store position
             _tep.position = position
             
             // fetch initial twat
-            fetchOfficialTweets();
-
-            // fetch dze answer tweetz
-            var loc = {'lat': _tep.position.coords.latitude,'lon':_tep.position.coords.longitude}
-            var since_id = '208933242810806271';
-            fetchAnswerTweets(loc, since_id);
+            fetchTweets();
 
         }, function(){
             error();
