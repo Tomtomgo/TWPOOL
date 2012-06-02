@@ -55,6 +55,12 @@ $.extend(Question.prototype, {
             for (var j = 0; j < this.reAnswer.length; j++){
                 var m = this.reAnswer[j].exec(tweet.text);
                 if (m != null){
+                    answer = m[1].replace(" ","");
+                    if (!(answer in this.answers)){
+                        // Create a list of all tweets that gave this answer
+                        this.answers[answer] = [];
+                    }
+                    this.answers[answer].push(tweet);
                     // m[1] is the first matching group
                     answersByUser[tweet.from_user] = [tweet, m[1]];
                 }
@@ -102,19 +108,18 @@ $.extend(Question.prototype, {
 
     
 // CONSTANTS
-_tep.HASHTAGID       = "#twitterpoule";
-_tep.OFFICIALACCOUNT = "twitterpoule2012";
+_tep.HASHTAGID       = "#tp2012";
+_tep.OFFICIALACCOUNT = "tweetpoule";
 _tep.LOCATIONRANGE = '0.1km';
     
 _tep.questions = {}
-// MOGELIJKE VRAGEN
-_tep.questions.winnaar = new Question("Winnaar wedstrijd.", /Wie gaat er winnen/, /(.+?)heeftgewonnen/,[ /(.+?)gaatwinnen/ ]);
-_tep.questions.test = new Question("Wat voor poule?", /Wat is dit voor poule?/, /een(.+?)poule/,[ /#(.+?)poule/ ]);
-    
 
-// ZOEK HUIDIGE LOCATIE
-// TOM MAAKT DIT!!
-    
+// MOGELIJKE VRAGEN
+_tep.questions.uitslag = new Question("Wat wordt de eindstand nederland - portugal?",
+                                      /eindstand nederland - portugal/, 
+                                      /(.+?) heeft gewonnen/,
+                                      [ /#hetwordt *([0-9]{1,2} *- *[0-9]{1,2})/ ]);
+
 // FETCH OFFICIELE TWEETS
 function fetchOfficialTweets(){
     var q = 'from:' + _tep.OFFICIALACCOUNT;
@@ -127,12 +132,12 @@ function fetchOfficialTweets(){
              'result_type': 'recent'},
       
       success: function(data){
-          _tep.questions.winnaar.processOfficialTweets(data.results);
+          _tep.questions.uitslag.processOfficialTweets(data.results);
           redraw();
       }
     });
 }
-        
+
 // TWEETS IN DE BUURT, MET ONZE HASHTAG, BINNEN TIJD
 function fetchAnswerTweets(location, since_id){
     var q = _tep.HASHTAGID;
@@ -147,16 +152,16 @@ function fetchAnswerTweets(location, since_id){
              'result_type': 'recent',
              'since_id': since_id},
       success: function(data){
-          _tep.questions.test.processAnswerTweets(data.results);
-          console.log(_tep.questions.test.assignPoints({}));
+          _tep.questions.uitslag.processAnswerTweets(data.results);
+          console.log(_tep.questions.uitslag.assignPoints({}));
           redraw();
       }
     });
 }
 
 function redraw(){
-    for (var key in _tep.questions.test.answers){
-        var u = _tep.questions.test.answers[key][0];
-        $('#container').append(u.from_user + " answered \"" + key + "\" to \"" + _tep.questions.test.question + '"')
+    for (var key in _tep.questions.uitslag.answers){
+        var u = _tep.questions.uitslag.answers[key][0];
+        $('#container').append(u.from_user + " answered \"" + key + "\" to \"" + _tep.questions.uitslag.question + '"')
     }
 }
