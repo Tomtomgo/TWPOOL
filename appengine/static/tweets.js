@@ -5,18 +5,19 @@
 * voor een bepaalde vraag, en de methods om
 * ertegen te matchen
 */
-Question = function(title, reStart, reEnd, reAnswer){
-    this.init(title, reStart, reEnd, reAnswer);
+Question = function(question, reStart, reEnd, reAnswer){
+    this.init(question, reStart, reEnd, reAnswer);
 }
 $.extend(Question.prototype, {
     
     // object variables
-    init: function(title, reStart, reEnd, reAnswer) {
+    init: function(question, reStart, reEnd, reAnswer) {
         // do initialization here
-        this.title    = title;
+        this.question = question;
         this.reStart  = reStart;
         this.reEnd    = reEnd;
         this.reAnswer = reAnswer;
+        this.answers  = {};
     },
    
     /**
@@ -42,7 +43,21 @@ $.extend(Question.prototype, {
     * To find the given answers and who gave them.
     */
     processAnswerTweets: function(tweets) {
-        this.answers = {};
+        for (var i = 0; i < tweets.length; i++){
+            var tweet = tweets[i];
+            // Iterate through all expressions for this answer
+            for (var j = 0; j < this.reAnswer.length; j++){
+                var m = this.reAnswer[j].exec(tweet.text);
+                if (m != null){
+                    answer = m[1];
+                    if (!(answer in this.answers)){
+                        // Create a list of all tweets that gave this answer
+                        this.answers[answer] = [];
+                    }
+                    this.answers[answer].push(tweet);
+                }
+            }
+        }
     }
 });
 
@@ -54,11 +69,8 @@ _tep.LOCATIONRANGE = '0.1km';
     
 _tep.questions = {}
 // MOGELIJKE VRAGEN
-_tep.questions.winnaar = new Question(
-    "Winnaar wedstrijd.", 
-    /Wie gaat er winnen/,
-    /(.+)heeftgewonnen/,
-    [ /(.+)gaatwinnen/ ]);
+_tep.questions.winnaar = new Question("Winnaar wedstrijd.", /Wie gaat er winnen/, /(.+?)heeftgewonnen/,[ /(.+?)gaatwinnen/ ]);
+_tep.questions.test = new Question("Wat voor poule?", /Wat is dit voor poule?/, /een(.+?)poule/,[ /#(.+?)poule/ ]);
     
 
 // ZOEK HUIDIGE LOCATIE
@@ -76,9 +88,8 @@ function fetchOfficialTweets(){
              'result_type': 'recent'},
       
       success: function(data){
-          for (var q = 0; q < _tep.QUESTIONS.length; q++){
-              _tep.questions.winnaar.processOfficialTweets(data.results);
-          }
+          _tep.questions.winnaar.processOfficialTweets(data.results);
+          redraw();
       }
     });
 }
@@ -96,15 +107,25 @@ function fetchAnswerTweets(location, since_id){
              'include_entities': 'true',
              'result_type': 'recent',
              'since_id': since_id},
-      success: function(data){console.log(data.results);}
+      success: function(data){
+          _tep.questions.test.processAnswerTweets(data.results);
+      }
     });
+}
+
+function redraw(){
+    for (var key in _tep.questions.test.answers){
+        var u = _tep.questions.test.answers[key][0];
+        $('#container').append(u.from_user + " answered \"" + key + "\" to \"" + _tep.questions.test.question + '"')
+    }
 }
     
 
 $(document).ready(function(){
-    console.log("Fetching answers");
+    fetchOfficialTweets();
     var loc = {'lat': 52.356801,'lon':4.909659}
     var since_id = '208933242810806271';
     var max_id = '208933242810806273';
     fetchAnswerTweets(loc, since_id);
+    
 })
