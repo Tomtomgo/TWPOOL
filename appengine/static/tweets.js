@@ -5,28 +5,46 @@
 * voor een bepaalde vraag, en de methods om
 * ertegen te matchen
 */
-_tep.PollQuestion = function(title, expressions){
-    this.init(expressions);
+_tep.PollQuestion = function(title, reStart, reEnd, reAnswer){
+    this.init(title, reStart, reEnd, reAnswer);
 }
 $.extend(_tep.PollQuestion, {
-   // object variables
-   expressions: {},
-
-   init: function(title, expressions) {
-       // do initialization here
-       this.title       = title;
-       this.expressions = expressions;
-   },
-
-   processOfficialTweets: function(tweets) {
-       var result = this.expressions['start'].exec(tweet);
-       this.startTweet = null;
-       this.endTweet = null;
-   },
+    // object variables
+    expressions: {},
    
-   processAnswerTweets: function(tweets) {
-       this.answers = {};
-   }
+    init: function(title, reStart, reEnd, reAnswer) {
+        // do initialization here
+        this.title    = title;
+        this.reStart  = reStart;
+        this.reEnd    = reEnd;
+        this.reAnswer = reAnswer;
+    },
+   
+    /**
+    * Process a list of 'official' tweets,
+    * to find the start tweet, end tweet, and
+    * the "correct" answer to the question
+    */
+    processOfficialTweets: function(tweets) {
+        for (var i = 0; i < tweets.length; i++){
+            var tweet = tweets[i];
+            if (this.reStart.exec(tweet.text) != null){
+               this.startTweet = tweet;
+            };
+            var endMatch = this.reEnd.exec(tweet.text);
+            if (endMatch != null){
+               this.endTweet = tweet;
+            };
+        }
+    },
+    
+    /**
+    * Process a list of answer tweets, 
+    * To find the given answers and who gave them.
+    */
+    processAnswerTweets: function(tweets) {
+        this.answers = {};
+    }
 });
 
     
@@ -35,13 +53,13 @@ window._tep.HASHTAGID       = "#twitterpoule";
 window._tep.OFFICIALACCOUNT = "twitterpoule2012";
 window._tep.LOCATIONRANGE = '0.1km';
     
+_tep.questions = {}
 // MOGELIJKE VRAGEN
-window._tep.QUESTIONS = [
-    PollQuestion("Winnaar wedstrijd.", 
-    {'start': /Wie gaat er winnen/,
-     'end': /(.+)heeftgewonnen/,
-     'answers': [ /(.+)gaatwinnen/ ] })
-];
+_tep.questions.winnaar = PollQuestion(
+    "Winnaar wedstrijd.", 
+    /Wie gaat er winnen/,
+    /(.+)heeftgewonnen/,
+    [ /(.+)gaatwinnen/ ]);
     
 
 // ZOEK HUIDIGE LOCATIE
@@ -57,12 +75,10 @@ function fetchOfficialTweets(){
              'rpp': '100', 
              'include_entities': 'true',
              'result_type': 'recent'},
+      
       success: function(data){
-          for (var i=0; i < data.results.length; i++){
-              var tweet = data.results[i];
-              for (var q=0; q < window._tep.QUESTIONS.length; q++){
-                  console.log(window._tep.QUESTIONS[q].matchesStart(tweet))
-              }
+          for (var q=0; q < window._tep.QUESTIONS.length; q++){
+              _tep.questionWinnaar.processOfficialTweets(data.results);
           }
       }
     });
@@ -85,12 +101,6 @@ function fetchAnswerTweets(location, since_id){
     });
 }
     
-    
-// VRAGEN SORTEREN
-    
-// RANKING, SCORES OPTELLEN
-    
-// PAGINA BOUWEN ADHV ANTWOORDEN
     
         
 $(document).ready(function(){
