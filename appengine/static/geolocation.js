@@ -1,29 +1,3 @@
-$(document).ready(function(){
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(success, error);
-  } else {
-    error('not supported');
-  }
-});
-
-function success(position) {
-  
-  var s = $('#status');
-  var map_element = $("#mapcanvas");
-
-  if (s.className == 'success') {
-    // prevent double loads in FF
-    return;
-  }
-
-  _tep.position = position
-
-  // report the status ofthe 
-  setStatus(s, "found you!", "success");
-  createMap(map_element, position);
-
-}
-
 function setStatus(obj, message, classname){
   
   obj[0].innerHTML = message;
@@ -54,12 +28,7 @@ function createMap(obj, position){
 }
 
 function error(msg) {
-  var s = $('#status');
-  msg = "Helaas pindakaas. Om mee te doen met de Twitter EK Poule 2012 moet je geolocation aan hebben staan.";
+  var s = $('body');
+  msg = "<h1>Helaas pindakaas. Om mee te doen met de Twitter EK Poule 2012 moet je geolocation aan hebben staan.</h1>";
   setStatus(s, msg, 'fail');
 }
-
-
-
-
-
