@@ -17,7 +17,7 @@ _tep.init = function(){
 
             // if already set, do not
             if(typeof(_tep.position)!="undefined"){return;}
-
+            
             // store position
             _tep.position = position
             
