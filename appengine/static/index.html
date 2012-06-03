@@ -4,6 +4,9 @@
 
         <title>Twitter Pool</title>
         
+        <!-- FONTS -->
+        <link href='http://fonts.googleapis.com/css?family=Just+Another+Hand|Exo:900' rel='stylesheet' type='text/css'>
+        
         <!-- WE NEED JQUERY -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         
@@ -15,12 +18,70 @@
         
         <!-- GET DZE TWEETZ -->
         <script src="tweets.js"></script>
+        
+        <style type="text/css" media="screen">
 
+        .clearfix:after {
+            content: ".";
+        	display: block;
+        	clear: both;
+        	visibility: hidden;
+        	line-height: 0;
+        	height: 0;
+        }
+        
+        body {
+            padding: 0; margin: 0;
+            font: 100% "Helvetica Neue", "Helvetica";
+        }
+        h1 {
+            font-family: 'Exo', sans-serif;
+        }
+        h2 {
+            font-family: 'Just Another Hand', cursive;
+        }
+        #container {
+            width: 400px; margin:auto; padding: 20px;
+        }
+        .answer {
+            clear: both;
+            margin: 4px;
+        }
+        .answer .head {
+            width: 20%; float: left;
+            border-radius: 4px 0 0 4px;
+            padding: 2px 0;
+            background: #FF8A00;
+            color: white;
+        }
+        .answer .head span{
+            margin: 0 5px;
+            font-weight: bold;
+        }
+        .answer .bar {
+            width: 80%; float: left;
+        }
+        .answer .bar .inner{
+            font-weight: bold;
+            background: #FF8A00;
+            border-radius: 0 4px 4px 0;
+            padding: 2px 0;
+        }
+        .answer .bar .users {
+            color: #777;
+        }
+        </style>
     </head>
 
     <body>
 
-        <div id="container"></div>
+        <div id="container">
+            <h1>Twitter EK Poule!</h1>
+            <div id="questions"></div>
+            <div id="map">
+            </div>
+        </div>
+        
 
     </body>
 

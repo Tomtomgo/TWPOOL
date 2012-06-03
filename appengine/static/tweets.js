@@ -112,21 +112,34 @@ $.extend(Question.prototype, {
     */
     buildHTML: function(){
         var box = $('<div></div>');
-        //Sort answers based on count.
         box.append('<h2>' + this.question + '</h2>');
         var answerCount = [];
+        // Count the answers
+        var max = 0;
         for (var answer in this.answers){
-            answerCount.push([this.answers[answer].length, answer]);
+            var numAnswer = this.answers[answer].length;
+            answerCount.push([numAnswer, answer]);
+            if (numAnswer > max) {
+                max = numAnswer;
+            }
         }
+        // Sort (most given answer first)
         answerCount.sort().reverse();
-        
+        // Create a bar for each answer
         for (var i = 0; i < answerCount.length; i++){
-            var bar = $('<div></div>');
+            var row = $('<div class="answer clearfix"></div>');
             var count = answerCount[i][0];
             var answer = answerCount[i][1];
-            var users = $.map(this.answers[answer], function(el, idx){ return el.from_user }).join()
-            bar.append('<span>' + answer + "</span> <span>" + count + "("+ users+")</span>");
-            box.append(bar);
+            row.append('<div class="head"><span>' + answer + "</span>   </div>");
+            var bar = $('<div class="bar"></div>');
+            var inner = $('<div class="inner"></div>')
+            inner.css("width", (count/max * 100) + '%')
+            bar.append(inner);
+            inner.append(count)
+            var users = $.map(this.answers[answer], function(el, idx){ return el.from_user }).join(', ');
+            bar.append("<div class='users'>"+users+"</class>");
+            row.append(bar);
+            box.append(row);
         }
         return box;
     }
@@ -191,5 +204,6 @@ function fetchAnswerTweets(since_id){
 }
 
 function redraw(){
-    $('#container').html(_tep.questions.uitslag.buildHTML() )
+    $('#questions').empty();
+    $('#questions').append(_tep.questions.uitslag.buildHTML() )
 }

@@ -22,6 +22,8 @@ _tep.init = function(){
             
             // fetch initial twat
             fetchTweets();
+            
+            
 
         }, function(){
             error();
