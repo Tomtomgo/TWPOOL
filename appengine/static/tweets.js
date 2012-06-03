@@ -93,13 +93,16 @@ $.extend(Question.prototype, {
             console.log("No official answer found to this question: " + this.question);
             return;
          }
-         for (var i = 0; i < this.answers[this.officialAnswer].length; i ++){
-             var tweet = this.answers[this.officialAnswer][i];
-             var user = tweet.from_user;
-             if (!(user in userPoints)){
-                 userPoints[user] = 0;
-             }
-             userPoints[user] += this.numberOfPoints;
+         
+         if (this.officialAnswer in this.answers){
+             for (var i = 0; i < this.answers[this.officialAnswer].length; i ++){
+                 var tweet = this.answers[this.officialAnswer][i];
+                 var user = tweet.from_user;
+                 if (!(user in userPoints)){
+                     userPoints[user] = 0;
+                 }
+                 userPoints[user] += this.numberOfPoints;
+             }             
          }
          return userPoints;
     },
@@ -133,7 +136,7 @@ $.extend(Question.prototype, {
 // CONSTANTS
 _tep.HASHTAGID       = "#tp2012";
 _tep.OFFICIALACCOUNT = "tweetpoule";
-_tep.LOCATIONRANGE = '0.1km';
+_tep.LOCATIONRANGE = '30km';
     
 _tep.questions = {}
 
@@ -144,6 +147,10 @@ _tep.questions.uitslag = new Question("Wat wordt de eindstand nederland - portug
                                       [ /#hetwordt *([0-9]{1,2} *- *[0-9]{1,2})/ ]);
 
 // FETCH OFFICIELE TWEETS
+function fetchTweets(){
+    fetchOfficialTweets();
+}
+
 function fetchOfficialTweets(){
     var q = 'from:' + _tep.OFFICIALACCOUNT;
     $.ajax({
@@ -156,15 +163,16 @@ function fetchOfficialTweets(){
       
       success: function(data){
           _tep.questions.uitslag.processOfficialTweets(data.results);
+          fetchAnswerTweets(1);
           redraw();
       }
     });
 }
 
 // TWEETS IN DE BUURT, MET ONZE HASHTAG, BINNEN TIJD
-function fetchAnswerTweets(location, since_id){
+function fetchAnswerTweets(since_id){
     var q = _tep.HASHTAGID;
-    var gc = location.lat + ',' + location.lon + ',' + _tep.LOCATIONRANGE
+    var gc = _tep.position.latitude + ',' + _tep.position.longitude + ',' + _tep.LOCATIONRANGE
     $.ajax({
       url: "http://search.twitter.com/search.json",
       dataType: 'jsonp',

@@ -14,12 +14,11 @@ _tep.init = function(){
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position){
-
+            
             // if already set, do not
             if(typeof(_tep.position)!="undefined"){return;}
-
             // store position
-            _tep.position = position
+            _tep.position = position.coords
             
             // fetch initial twat
             fetchTweets();
