@@ -115,7 +115,6 @@ $.extend(Question.prototype, {
     */
     buildHTML: function(){
         var box = $('<div></div>');
-        box.append('<h2>' + this.question + '</h2>');
         var answerCount = [];
         // Count the answers
         var max = 0;
@@ -130,6 +129,7 @@ $.extend(Question.prototype, {
         answerCount.sort().reverse();
         // Create a bar for each answer
         for (var i = 0; i < answerCount.length; i++){
+            // Assemble some HTML
             var row = $('<div class="answer clearfix"></div>');
             var count = answerCount[i][0];
             var answer = answerCount[i][1];
@@ -142,8 +142,15 @@ $.extend(Question.prototype, {
             var users = $.map(this.answers[answer], function(el, idx){ return el.from_user }).join(', ');
             bar.append("<div class='users'>"+users+"</class>");
             row.append(bar);
-            box.append(row);
+            // Put the correct answer on top
+            if (this.officialAnswer != null && answer == this.officialAnswer){
+                row.addClass('correct');
+                box.prepend(row);
+            } else {
+                box.append(row);
+            }
         }
+        box.prepend('<h2>' + this.question + '</h2>');
         return box;
     }
 });
