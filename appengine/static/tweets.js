@@ -12,9 +12,9 @@ Question = function(question, reStart, reEnd, reAnswer){
 $.extend(Question.prototype, {
     
     // object variables
-    init: function(question, reStart, reEnd, reAnswer) {
+    init: function(reStart, reEnd, reAnswer) {
         // do initialization here
-        this.question       = question;
+        this.question       = 'Wat?';
         this.reStart        = reStart;
         this.reEnd          = reEnd;
         this.reAnswer       = reAnswer;
@@ -31,8 +31,11 @@ $.extend(Question.prototype, {
     processOfficialTweets: function(tweets) {
         for (var i = 0; i < tweets.length; i++){
             var tweet = tweets[i];
-            if (this.reStart.exec(tweet.text) != null){
+            console.log("Scanning official:" + tweet.text);
+            var startMatch = this.reStart.exec(tweet.text);
+            if (startMatch != null){
                this.startTweet = tweet;
+               this.question = startMatch[0];
             };
             var endMatch = this.reEnd.exec(tweet.text);
             if (endMatch != null){
@@ -154,9 +157,8 @@ _tep.LOCATIONRANGE = '30km';
 _tep.questions = {}
 
 // MOGELIJKE VRAGEN
-_tep.questions.uitslag = new Question("Wat wordt de eindstand nederland - portugal?",
-                                      /eindstand nederland - portugal/i, 
-                                      /nederland *- *portugal ([0-9]{1,2} *- *[0-9]{1,2})/i,
+_tep.questions.uitslag = new Question(/Wat wordt de eindstand ([\w ]+-[\w ]+)\?/,
+                                      /Eindstand [\w ]+-[\w ]+ ([0-9]{1,2} ?- ?[0-9]{1,2})/i,
                                       [ /#hetwordt *([0-9]{1,2} *- *[0-9]{1,2})/ ]);
 
 // FETCH OFFICIELE TWEETS
